@@ -1,7 +1,6 @@
 import tkinter as tk
-from car_park import CarPark
+from car_park import CarParkInfo
 from tkinter import ttk
-from tkinter.messagebox import showinfo
 from tkinter import messagebox
 import datetime
 from publisher import Publisher
@@ -12,18 +11,21 @@ class Car:
     DISPLAY_INIT = '– – –'
 
     def __init__(self, license_plate, car_model):
-        self.publisher = Publisher("CarAct")
+
         self.license_plate = license_plate
         self.car_model = car_model
         self.entry_time = self.DISPLAY_INIT
         self.entry_car_park_name = self.DISPLAY_INIT
         self.entry_car_park_id = self.DISPLAY_INIT
 
-        car_park_1 = CarPark("1", "Wilson Parking", "102 Wilson Street",
+        car_park_1 = CarParkInfo("1", "Wilson Parking",
+                                 "102 Wilson Street",
+                                self.DISPLAY_INIT, self.DISPLAY_INIT, self.DISPLAY_INIT)
+        car_park_2 = CarParkInfo("2", "QV1 Car Park",
+                                 "51 Murry Street",
                              self.DISPLAY_INIT, self.DISPLAY_INIT, self.DISPLAY_INIT)
-        car_park_2 = CarPark("2", "QV1 Car Park", "51 Murry Street",
-                             self.DISPLAY_INIT, self.DISPLAY_INIT, self.DISPLAY_INIT)
-        car_park_3 = CarPark("3", "CPP Car Park", "87-89 Pier Str",
+        car_park_3 = CarParkInfo("3", "CPP Car Park",
+                                 "87-89 Pier Str",
                              self.DISPLAY_INIT, self.DISPLAY_INIT, self.DISPLAY_INIT)
 
         displayer = tk.Tk()
@@ -65,11 +67,8 @@ class Car:
         # prevent typing a value
         cap_park_cb['state'] = 'readonly'
 
-        # bind the selected value changes
-        def car_park_changed(event):
-            pass
-
-        cap_park_cb.bind('<<ComboboxSelected>>', car_park_changed)
+        # add publisher
+        self.publisher = Publisher("CarAct")
 
         # 'entry' button
         def entry_car_park():
