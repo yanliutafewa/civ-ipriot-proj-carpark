@@ -3,18 +3,26 @@ from car_park import CarPark
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 from tkinter import messagebox
-from calendar import month_name
+import datetime
+from publisher import Publisher
+
 
 class Car:
+
+    DISPLAY_INIT = '– – –'
+
     def __init__(self, license_plate, car_model, entry_time, exit_time):
+        self.publisher = Publisher("CarAct")
         self.license_plate = license_plate
         self.car_model = car_model
         self.entry_time = entry_time
-        self.exit_time = exit_time
 
-        car_park_1 = CarPark("1", "Wilson Parking", "102 Wilson Street", 25, 20, 10)
-        car_park_2 = CarPark("2", "QV1 Car Park", "51 Murry Street", 20, 28, 2)
-        car_park_3 = CarPark("3", "CPP Car Park", "87-89 Pier Str", 21, 35, 30)
+        car_park_1 = CarPark("1", "Wilson Parking", "102 Wilson Street",
+                             self.DISPLAY_INIT, self.DISPLAY_INIT, self.DISPLAY_INIT)
+        car_park_2 = CarPark("2", "QV1 Car Park", "51 Murry Street",
+                             self.DISPLAY_INIT, self.DISPLAY_INIT, self.DISPLAY_INIT)
+        car_park_3 = CarPark("3", "CPP Car Park", "87-89 Pier Str",
+                             self.DISPLAY_INIT, self.DISPLAY_INIT, self.DISPLAY_INIT)
 
         displayer = tk.Tk()
         displayer.geometry('1200x550')
@@ -27,7 +35,6 @@ class Car:
         l_plate_value = tk.Label(displayer, text=f"{self.license_plate}", font=('Arial', 18))
         l_model = tk.Label(displayer, text="car_model :", font=('Arial', 18))
         l_model_value = tk.Label(displayer, text=f"{self.car_model}", font=('Arial', 18))
-
         l_plate.grid(row=1, column=0, sticky="W", pady=(20,5), padx=(50, 5))
         l_plate_value.grid(row=1, column=1, sticky="W", pady=(20,5), padx=(50, 5))
         l_model.grid(row=1, column=2, sticky="W", pady=(20,5), padx=(50, 5))
@@ -35,48 +42,45 @@ class Car:
 
         l_entry_time = tk.Label(displayer, text="entry_time :", font=('Arial', 18))
         l_entry_time_value = tk.Label(displayer, text=f"{self.entry_time}", font=('Arial', 18))
-        l_exit_time = tk.Label(displayer, text="exit_time :", font=('Arial', 18))
-        l_exit_time_value = tk.Label(displayer, text=f"{self.exit_time}", font=('Arial', 18))
-
         l_entry_time.grid(row=2, column=0, sticky="W", pady=(20,5), padx=(50, 5))
         l_entry_time_value.grid(row=2, column=1, sticky="W", pady=(20,5), padx=(50, 5))
-        l_exit_time.grid(row=2, column=2, sticky="W", pady=(20,5), padx=(50, 5))
-        l_exit_time_value.grid(row=2, column=3, sticky="W", pady=(20,5), padx=(50, 5))
 
         l_car_park = tk.Label(displayer, text="Car Park :", font=('Arial', 18))
         l_car_park.grid(row=3, column=0, sticky="W", pady=(20,5), padx=(50, 5))
 ###########
-        # create a combobox
-        selected_month = tk.StringVar()
-        month_cb = ttk.Combobox(displayer, textvariable=selected_month)
-        month_cb.grid(row=3, column=1, sticky="W", pady=(20, 5), padx=(50, 5))
+        # create a combobox #####
+        selected_number = tk.StringVar()
+        cap_park_cb = ttk.Combobox(displayer, textvariable=selected_number)
+        cap_park_cb.grid(row=3, column=1, sticky="W", pady=(20, 5), padx=(50, 5))
 
         # get first 3 letters of every month name
-        month_cb['values'] = [month_name[m][0:3] for m in range(1, 13)]
+        cap_park_cb['values'] = [1,2,3]
 
         # prevent typing a value
-        month_cb['state'] = 'readonly'
+        cap_park_cb['state'] = 'readonly'
 
         # bind the selected value changes
-        def month_changed(event):
-            """ handle the month changed event """
+        def car_park_changed(event):
+
             showinfo(
                 title='Result',
-                message=f'You selected {selected_month.get()}!'
+                message=f'You selected {selected_number.get()}!'
             )
 
-        month_cb.bind('<<ComboboxSelected>>', month_changed)
+        cap_park_cb.bind('<<ComboboxSelected>>', car_park_changed)
 ###########
 
 ########
         def entry_car_park():
-            msg = messagebox.showinfo("Message", "entry")
+            l_entry_time_value.config(text=datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S'))
+            self.publisher.publish_msg(f"in,{selected_number.get()}")
+            msg = messagebox.showinfo("Message", selected_number.get())
 
         b_entry = tk.Button(displayer, text="Entry", command=entry_car_park)
         b_entry.grid(row=3, column=2, sticky="W", pady=(20, 5), padx=(50, 5))
 
         def exit_car_park():
-            msg = messagebox.showinfo("Message", "Exit")
+            l_entry_time_value.config(text='')
 
         b_exit = tk.Button(displayer, text="Exit", command=exit_car_park)
         b_exit.grid(row=3, column=3, sticky="W", pady=(20, 5), padx=(50, 5))
@@ -181,6 +185,7 @@ class Car:
         l_66.grid(row=9, column=5, sticky="W", pady=5)
 
         displayer.mainloop()
+
 
 
 if __name__ == '__main__':
