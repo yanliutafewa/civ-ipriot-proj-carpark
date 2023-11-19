@@ -35,9 +35,9 @@ class WindowDisplayer:
 
             # create the elements
             self.gui_elements[f'lbl_field_{i}'] = tk.Label(
-                self.window, text=field+self.SEP, font=('Arial', 50))
+                self.window, text=field+self.SEP, font=('Arial', 20))
             self.gui_elements[f'lbl_value_{i}'] = tk.Label(
-                self.window, text=self.DISPLAY_INIT, font=('Arial', 50))
+                self.window, text=self.DISPLAY_INIT, font=('Arial', 20))
 
             # position the elements
             self.gui_elements[f'lbl_field_{i}'].grid(

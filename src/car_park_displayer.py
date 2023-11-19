@@ -1,5 +1,6 @@
 import random
 from window_displayer import WindowDisplayer
+from car_park import CarPark
 import threading
 import time
 
@@ -10,26 +11,29 @@ class CarParkDisplayer:
     The class is designed to be customizable without requiring and understanding of tkinter or threading.
     """
     # determines what fields appear in the UI
-    fields = ['Available bays', 'Temperature', 'At']
+    fields = ['CarPark No.', 'CarPark Name', 'CarPark Address', 'Temperature', 'Available bays', 'At']
 
     def __init__(self):
         self.window = WindowDisplayer(
-            'Moondalup', CarParkDisplayer.fields)
+            'Moondalup CarPark Management Center', CarParkDisplayer.fields)
         updater = threading.Thread(target=self.check_updates)
         updater.daemon = True
         updater.start()
         self.window.show()
 
-    def check_updates(self):
+    def check_updates(self, car_park: CarPark):
         # TODO: This is where you should manage the MQTT subscription
         while True:
             # NOTE: Dictionary keys *must* be the same as the class fields
             field_values = dict(zip(CarParkDisplayer.fields, [
-                f'{random.randint(0, 150):03d}',
-                f'{random.randint(0, 45):02d}℃',
+                f'{car_park.car_park_id}',
+                f'{car_park.car_park_name}',
+                f'{car_park.car_park_address}',
+                f'{car_park.temperature:02d}℃',
+                f'{car_park.parking_bays - car_park.occupied:03d}',
                 time.strftime("%H:%M:%S")]))
             # Pretending to wait on updates from MQTT
-            time.sleep(random.randint(1, 10))
+            time.sleep(3)
             # When you get an update, refresh the display.
             self.window.update(field_values)
 
