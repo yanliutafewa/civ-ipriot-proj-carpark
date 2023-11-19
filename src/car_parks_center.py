@@ -7,9 +7,9 @@ class CarParksCenter:
 
     def __init__(self):
 
-        car_park_1 = CarPark("1", "Wilson Parking", "102 Wilson Street", 25, 20, 10)
-        car_park_2 = CarPark("2", "QV1 Car Park", "51 Murry Street", 20, 28, 2)
-        car_park_3 = CarPark("3", "CPP Car Park", "87-89 Pier Str", 21, 35, 30)
+        self.car_park_1 = CarPark("1", "Wilson Parking", "102 Wilson Street", 25, 20, 10)
+        self.car_park_2 = CarPark("2", "QV1 Car Park", "51 Murry Street", 20, 28, 2)
+        self.car_park_3 = CarPark("3", "CPP Car Park", "87-89 Pier Str", 21, 35, 30)
 
         self.displayer = tk.Tk()
         self.displayer.geometry('1200x400')
@@ -35,12 +35,12 @@ class CarParksCenter:
         l_16.grid(row=6, column=0, sticky="W", pady=5, padx=(50, 5))
 
         # set values
-        l_21 = tk.Label(self.displayer, text=f"{car_park_1.car_park_id}", font=('Arial', 14))
-        l_22 = tk.Label(self.displayer, text=f"{car_park_1.car_park_name}", font=('Arial', 14))
-        l_23 = tk.Label(self.displayer, text=f"{car_park_1.car_park_address}", font=('Arial', 14))
-        l_24 = tk.Label(self.displayer, text=f"{car_park_1.temperature}℃", font=('Arial', 14))
-        l_25 = tk.Label(self.displayer, text=f"{car_park_1.parking_bays}", font=('Arial', 14))
-        l_26 = tk.Label(self.displayer, text=f"{car_park_1.occupied}", font=('Arial', 14))
+        l_21 = tk.Label(self.displayer, text=f"{self.car_park_1.car_park_id}", font=('Arial', 14))
+        l_22 = tk.Label(self.displayer, text=f"{self.car_park_1.car_park_name}", font=('Arial', 14))
+        l_23 = tk.Label(self.displayer, text=f"{self.car_park_1.car_park_address}", font=('Arial', 14))
+        l_24 = tk.Label(self.displayer, text=f"{self.car_park_1.temperature}℃", font=('Arial', 14))
+        l_25 = tk.Label(self.displayer, text=f"{self.car_park_1.parking_bays}", font=('Arial', 14))
+        self.l_26 = tk.Label(self.displayer, text=f"{self.car_park_1.occupied}", font=('Arial', 14))
 
         # this will arrange entry widgets
         l_21.grid(row=1, column=1, sticky="W", pady=(20,5))
@@ -48,7 +48,7 @@ class CarParksCenter:
         l_23.grid(row=3, column=1, sticky="W", pady=5)
         l_24.grid(row=4, column=1, sticky="W", pady=5)
         l_25.grid(row=5, column=1, sticky="W", pady=5)
-        l_26.grid(row=6, column=1, sticky="W", pady=5)
+        self.l_26.grid(row=6, column=1, sticky="W", pady=5)
 
         # set for car_park_2
         # set Properties' name
@@ -67,12 +67,12 @@ class CarParksCenter:
         l_36.grid(row=6, column=2, sticky="W", pady=5, padx=(60, 5))
 
         # set values
-        l_41 = tk.Label(self.displayer, text=f"{car_park_2.car_park_id}", font=('Arial', 14))
-        l_42 = tk.Label(self.displayer, text=f"{car_park_2.car_park_name}", font=('Arial', 14))
-        l_43 = tk.Label(self.displayer, text=f"{car_park_2.car_park_address}", font=('Arial', 14))
-        l_44 = tk.Label(self.displayer, text=f"{car_park_2.temperature}℃", font=('Arial', 14))
-        l_45 = tk.Label(self.displayer, text=f"{car_park_2.parking_bays}", font=('Arial', 14))
-        l_46 = tk.Label(self.displayer, text=f"{car_park_2.occupied}", font=('Arial', 14))
+        l_41 = tk.Label(self.displayer, text=f"{self.car_park_2.car_park_id}", font=('Arial', 14))
+        l_42 = tk.Label(self.displayer, text=f"{self.car_park_2.car_park_name}", font=('Arial', 14))
+        l_43 = tk.Label(self.displayer, text=f"{self.car_park_2.car_park_address}", font=('Arial', 14))
+        l_44 = tk.Label(self.displayer, text=f"{self.car_park_2.temperature}℃", font=('Arial', 14))
+        l_45 = tk.Label(self.displayer, text=f"{self.car_park_2.parking_bays}", font=('Arial', 14))
+        self.l_46 = tk.Label(self.displayer, text=f"{self.car_park_2.occupied}", font=('Arial', 14))
 
         # this will arrange entry widgets
         l_41.grid(row=1, column=3, sticky="W", pady=(20,5))
@@ -80,7 +80,7 @@ class CarParksCenter:
         l_43.grid(row=3, column=3, sticky="W", pady=5)
         l_44.grid(row=4, column=3, sticky="W", pady=5)
         l_45.grid(row=5, column=3, sticky="W", pady=5)
-        l_46.grid(row=6, column=3, sticky="W", pady=5)
+        self.l_46.grid(row=6, column=3, sticky="W", pady=5)
 
         # set for car_park_3
         # set Properties' name
@@ -99,12 +99,12 @@ class CarParksCenter:
         l_56.grid(row=6, column=4, sticky="W", pady=5, padx=(60, 5))
 
         # set values
-        l_61 = tk.Label(self.displayer, text=f"{car_park_3.car_park_id}", font=('Arial', 14))
-        l_62 = tk.Label(self.displayer, text=f"{car_park_3.car_park_name}", font=('Arial', 14))
-        l_63 = tk.Label(self.displayer, text=f"{car_park_3.car_park_address}", font=('Arial', 14))
-        l_64 = tk.Label(self.displayer, text=f"{car_park_3.temperature}℃", font=('Arial', 14))
-        l_65 = tk.Label(self.displayer, text=f"{car_park_3.parking_bays}", font=('Arial', 14))
-        l_66 = tk.Label(self.displayer, text=f"{car_park_3.occupied}", font=('Arial', 14))
+        l_61 = tk.Label(self.displayer, text=f"{self.car_park_3.car_park_id}", font=('Arial', 14))
+        l_62 = tk.Label(self.displayer, text=f"{self.car_park_3.car_park_name}", font=('Arial', 14))
+        l_63 = tk.Label(self.displayer, text=f"{self.car_park_3.car_park_address}", font=('Arial', 14))
+        l_64 = tk.Label(self.displayer, text=f"{self.car_park_3.temperature}℃", font=('Arial', 14))
+        l_65 = tk.Label(self.displayer, text=f"{self.car_park_3.parking_bays}", font=('Arial', 14))
+        self.l_66 = tk.Label(self.displayer, text=f"{self.car_park_3.occupied}", font=('Arial', 14))
 
         # this will arrange entry widgets
         l_61.grid(row=1, column=5, sticky="W", pady=(20,5))
@@ -112,7 +112,7 @@ class CarParksCenter:
         l_63.grid(row=3, column=5, sticky="W", pady=5)
         l_64.grid(row=4, column=5, sticky="W", pady=5)
         l_65.grid(row=5, column=5, sticky="W", pady=5)
-        l_66.grid(row=6, column=5, sticky="W", pady=5)
+        self.l_66.grid(row=6, column=5, sticky="W", pady=5)
 
         self.label = tk.Label(self.displayer, text="Messages from MQTT will appear here:")
         self.label.grid(row=7, column=0, columnspan=6, pady=(20,5))
@@ -124,7 +124,7 @@ class CarParksCenter:
         self.client.on_message = self.on_message
 
         # Connect to MQTT broker
-        self.client.connect("localhost", 1883, 60)
+        self.client.connect("localhost", 1883, 600)
 
         # Start MQTT loop in a non-blocking way
         self.client.loop_start()
@@ -137,11 +137,36 @@ class CarParksCenter:
     def on_message(self, client, userdata, msg):
         message = msg.payload.decode()
         print("Received message: " + message)
-        # Update label with received message
-        self.label.config(text="Received message: " + message)
+
+        # get effective info
+        act = str(message).split(",")[0]
+        car_park_id = str(message).split(",")[1]
+
+        # update occupied number for corresponding car park
+        if act == 'in' and car_park_id == '1':
+            self.car_park_1.occupied += 1
+            self.l_26.config(text=self.car_park_1.occupied)
+        if act == 'out' and car_park_id == '1':
+            self.car_park_1.occupied -= 1
+            self.l_26.config(text=self.car_park_1.occupied)
+
+        if act == 'in' and car_park_id == '2':
+            self.car_park_2.occupied += 1
+            self.l_46.config(text=self.car_park_2.occupied)
+        if act == 'out' and car_park_id == '2':
+            self.car_park_2.occupied -= 1
+            self.l_46.config(text=self.car_park_2.occupied)
+
+        if act == 'in' and car_park_id == '3':
+            self.car_park_3.occupied += 1
+            self.l_66.config(text=self.car_park_3.occupied)
+        if act == 'out' and car_park_id == '3':
+            self.car_park_3.occupied -= 1
+            self.l_66.config(text=self.car_park_3.occupied)
 
     def run(self):
         self.displayer.mainloop()
+
 
 if __name__ == "__main__":
     app = CarParksCenter()
