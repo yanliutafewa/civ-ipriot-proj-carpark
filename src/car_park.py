@@ -2,6 +2,7 @@ import tkinter as tk
 from publisher import Publisher
 from tkinter import messagebox
 import paho.mqtt.client as mqtt
+import time
 
 
 class CarParkInfo:
@@ -78,16 +79,15 @@ class CarPark:
         l_25.pack(side=tk.LEFT)
 
         # add MQTT publisher for transfer temperature.
-        self.publisher = Publisher("UpdateTemperature")
+        self.publisher_temperature = Publisher("UpdateTemperature")
 
         # 'update temperature' button
         def update_temperature():
-            self.publisher.publish_msg(f"{self.car_park.car_park_id},{e_temperature.get()}")
+            self.publisher_temperature.publish_msg(f"{self.car_park.car_park_id},{e_temperature.get()}")
             self.car_park.temperature = e_temperature.get()
             messagebox.showinfo("Message",
                                 f"Temperature has been set as {self.car_park.temperature}℃ "
                                 f"for Car Park {self.car_park.car_park_id}.")
-
         b_entry = tk.Button(self.displayer, text="Update Temperature", command=update_temperature, font=('Arial', 14))
         b_entry.grid(row=5, column=2, sticky="W", pady=5)
 
@@ -95,12 +95,21 @@ class CarPark:
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
-
         # Connect to MQTT broker
         self.client.connect("localhost", 1883, 600)
-
         # Start MQTT loop in a non-blocking way
         self.client.loop_start()
+
+        # add MQTT publisher for transfer car park info every 10 second.
+        self.publisher_car_park = Publisher("CarParkInfo")
+        # Publish messages every 10 seconds
+        while True:
+            # Publish a message to a specific topic
+            message = (f"{self.car_park.car_park_id},{self.car_park.car_park_name},{self.car_park.car_park_address},"
+                       f"{self.car_park.temperature}, {self.car_park.parking_bays},{self.car_park.occupied}")
+            self.publisher_car_park.publish_msg(message)
+            print(f"Message published: {message}")
+            time.sleep(10)  # Sleep for 10 seconds
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))

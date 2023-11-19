@@ -122,10 +122,8 @@ class CarParksCenter:
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
-
         # Connect to MQTT broker
         self.client.connect("localhost", 1883, 600)
-
         # Start MQTT loop in a non-blocking way
         self.client.loop_start()
 
