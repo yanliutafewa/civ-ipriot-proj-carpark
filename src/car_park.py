@@ -67,9 +67,6 @@ class CarPark:
         l_25 = tk.Label(frame, text="℃", font=('Arial', 14))
         l_25.pack(side=tk.LEFT)
 
-        # add MQTT publisher for transfer temperature.
-        self.publisher_temperature = Publisher("UpdateTemperature")
-
         # 'update temperature' button
         def update_temperature():
             new_temperature = e_temperature.get()
@@ -78,8 +75,7 @@ class CarPark:
                 messagebox.showinfo("Error",
                                     f"Please input a digital number for the temperature.")
                 return
-            self.publisher_temperature.publish_msg(f"{self.car_park_info.car_park_id},{new_temperature}")
-            print(f"Topic=UpdateTemperature: {self.car_park_info.car_park_id},{new_temperature}")
+
             self.car_park_info.temperature = new_temperature
             messagebox.showinfo("Message",
                                 f"Temperature has been set as {self.car_park_info.temperature}℃ "
@@ -115,7 +111,7 @@ class CarPark:
                        f"{self.car_park_info.occupied}")
             self.publisher_car_park_info.publish_msg(message)
             print(f"Message published: {message}")
-            time.sleep(3)  # Sleep for 10 seconds
+            time.sleep(2)  # Sleep for 10 seconds
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
@@ -127,8 +123,8 @@ class CarPark:
         print("Received message: " + message)
 
         # get effective info
-        act = str(message).split(",")[0]
-        car_park_id = str(message).split(",")[1]
+        car_park_id = str(message).split(",")[0]
+        act = str(message).split(",")[1]
 
         # update occupied number for corresponding car park
         if car_park_id == self.car_park_info.car_park_id:
@@ -150,11 +146,18 @@ def main():
                              "87-89 Pier Str", 21,
                              35, 30)
 
-    displayer = tk.Tk()
-    #CarPark(displayer, car_park_1)
-    # CarPark(displayer, car_park_2)
-    CarPark(displayer, car_park_3)
-    displayer.mainloop()
+    # displayer_1 = tk.Tk()
+    # CarPark(displayer_1, car_park_1)
+
+    displayer_2 = tk.Tk()
+    CarPark(displayer_2, car_park_2)
+
+    # displayer_3 = tk.Tk()
+    # CarPark(displayer_3, car_park_3)
+
+    # displayer_1.mainloop()
+    displayer_2.mainloop()
+    # displayer_3.mainloop()
 
 
 if __name__ == "__main__":

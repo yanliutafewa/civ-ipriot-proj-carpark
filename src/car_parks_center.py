@@ -1,12 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 import paho.mqtt.client as mqtt
-from car_park import CarParkInfo
 
 
 class CarParksCenter:
 
-    car_park_list = list()
+    # car_park_list = list()
 
     def __init__(self, displayer):
 
@@ -18,13 +17,13 @@ class CarParksCenter:
         l_title.pack()
 
         style = ttk.Style()
-        style.configure("Treeview.Heading", font=('Calibri', 14,'bold'))
+        style.configure("Treeview.Heading", font=('Calibri', 14, 'bold'))
         style.configure("Treeview", font=('Calibri', 12))
 
         # Create Treeview widget
         self.tv_car_parks = ttk.Treeview(displayer)
         self.tv_car_parks["columns"] = ("car park id", "car park name", "address", "temperature", "parking bays",
-                           "occupied")
+                                        "occupied")
         self.tv_car_parks.column("car park id", width=50, anchor=tk.CENTER)
         self.tv_car_parks.column("car park name", width=50, anchor=tk.CENTER)
         self.tv_car_parks.column("address", width=50, anchor=tk.CENTER)
@@ -40,9 +39,6 @@ class CarParksCenter:
         self.tv_car_parks.pack(expand=True, fill=tk.BOTH)
         self.tv_car_parks['show'] = 'headings'
 
-        # Populate the table
-        # populate_table(self.tv_car_parks)
-
         # Initialize MQTT subscriber
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
@@ -54,9 +50,8 @@ class CarParksCenter:
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
-        # Subscribe to two topics
+        # Subscribe to topics
         client.subscribe("CarAct")
-        client.subscribe("UpdateTemperature")
         client.subscribe("CarParkInfo")
 
     def on_message(self, client, userdata, msg):
@@ -69,17 +64,22 @@ class CarParksCenter:
         if topic == 'CarParkInfo':
             for line in self.tv_car_parks.get_children():
                 if self.tv_car_parks.item(line)['values'][0] == int(car_park_id):
+                    self.tv_car_parks.item(line, values=(self.tv_car_parks.item(line)['values'][0],
+                                                         self.tv_car_parks.item(line)['values'][1],
+                                                         self.tv_car_parks.item(line)['values'][2],
+                                                         str(message).split(",")[3] + "℃",
+                                                         self.tv_car_parks.item(line)['values'][4],
+                                                         str(message).split(",")[5]))
                     return
-                # if not existed in treeview tv_car_parks, insert
+            # if not existed in treeview tv_car_parks, insert
             self.tv_car_parks.insert("", "end",
                                      values=(str(message).split(",")[0], str(message).split(",")[1],
                                              str(message).split(",")[2], str(message).split(",")[3] + "℃",
                                              str(message).split(",")[4], str(message).split(",")[5]))
             return
-
-        for line in self.tv_car_parks.get_children():
-            if self.tv_car_parks.item(line)['values'][0] == int(car_park_id):
-                if topic == 'CarAct':
+        if topic == 'CarAct':
+            for line in self.tv_car_parks.get_children():
+                if self.tv_car_parks.item(line)['values'][0] == int(car_park_id):
                     # get action 'in/out' from message
                     act = str(message).split(",")[1]
                     # get parking_bays and occupied from tree item.
@@ -89,47 +89,16 @@ class CarParksCenter:
                         self.tv_car_parks.item(line, values=(self.tv_car_parks.item(line)['values'][0],
                                                self.tv_car_parks.item(line)['values'][1],
                                                self.tv_car_parks.item(line)['values'][2],
-                                               self.tv_car_parks.item(line)['values'][3] + "℃",
+                                               self.tv_car_parks.item(line)['values'][3],
                                                parking_bays,
                                                occupied+1))
                     if act == 'out' and occupied > 0:
                         self.tv_car_parks.item(line, values=(self.tv_car_parks.item(line)['values'][0],
                                                self.tv_car_parks.item(line)['values'][1],
                                                self.tv_car_parks.item(line)['values'][2],
-                                               self.tv_car_parks.item(line)['values'][3] + "℃",
+                                               self.tv_car_parks.item(line)['values'][3],
                                                parking_bays,
                                                occupied-1))
-
-                if topic == 'UpdateTemperature':
-                    # get new temperature from message
-                    new_temperature = str(message).split(",")[1]
-                    self.tv_car_parks.item(line, values=(self.tv_car_parks.item(line)['values'][0],
-                                                         self.tv_car_parks.item(line)['values'][1],
-                                                         self.tv_car_parks.item(line)['values'][2],
-                                                         new_temperature + "℃",
-                                                         self.tv_car_parks.item(line)['values'][4],
-                                                         self.tv_car_parks.item(line)['values'][5]))
-
-
-def populate_table(tree):
-    # Inserting data into the table
-    data = list()
-    car_park_1 = CarParkInfo("1", "Wilson Parking",
-                             "102 Wilson Street", 25,
-                             20, 10)
-    car_park_2 = CarParkInfo("2", "QV1 Car Park",
-                             "51 Murry Street", 20,
-                             28, 2)
-    car_park_3 = CarParkInfo("3", "CPP Car Park",
-                             "87-89 Pier Str", 21,
-                             35, 30)
-    data.append(car_park_1)
-    data.append(car_park_2)
-    data.append(car_park_3)
-    for record in data:
-        tree.insert("", "end", values=(record.car_park_id, record.car_park_name,
-                                       record.car_park_address, record.temperature,
-                                       record.parking_bays, record.occupied))
 
 
 def main():

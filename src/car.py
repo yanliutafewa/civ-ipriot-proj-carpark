@@ -1,5 +1,4 @@
 import tkinter as tk
-from car_park import CarParkInfo
 from tkinter import ttk
 from tkinter import messagebox
 import datetime
@@ -10,15 +9,14 @@ import paho.mqtt.client as mqtt
 class Car:
 
     DISPLAY_INIT = '– – –'
-    car_park_list = list()
 
     def __init__(self, displayer, car_plate, car_model):
 
         self.car_plate = car_plate
         self.car_model = car_model
         self.entry_time = self.DISPLAY_INIT
-        self.entry_car_park_name = self.DISPLAY_INIT
         self.entry_car_park_id = self.DISPLAY_INIT
+        self.entry_car_park_name = self.DISPLAY_INIT
 
         displayer.geometry('1200x550')
         displayer.title(f"Car: {self.car_plate}")
@@ -54,15 +52,11 @@ class Car:
 
         # combobox for select car park
         selected_number = tk.StringVar()
-        cap_park_cb = ttk.Combobox(displayer, textvariable=selected_number, font=('Arial', 16), width=10)
-        cap_park_cb.grid(row=3, column=1, sticky="W", pady=(20, 5))
-
-        # todo: fix the problem
-        # cap_park_cb['values'] = [car_park_1.car_park_id, car_park_2.car_park_id, car_park_3.car_park_id]
-        cap_park_cb['values'] = [1, 2, 3]
+        self.cap_park_cb = ttk.Combobox(displayer, textvariable=selected_number, font=('Arial', 16), width=10)
+        self.cap_park_cb.grid(row=3, column=1, sticky="W", pady=(20, 5))
 
         # prevent typing a value
-        cap_park_cb['state'] = 'readonly'
+        self.cap_park_cb['state'] = 'readonly'
 
         # add publisher
         self.publisher = Publisher("CarAct")
@@ -70,22 +64,16 @@ class Car:
         # 'entry' button
         def entry_car_park():
             self.publisher.publish_msg(f"{selected_number.get()},in")
-            # todo: fix the problem
-            """ 
-            if selected_number.get() == car_park_1.car_park_id:
-                self.entry_car_park_name = car_park_1.car_park_name
-                self.entry_car_park_id = car_park_1.car_park_id
-            if selected_number.get() == car_park_2.car_park_id:
-                self.entry_car_park_name = car_park_2.car_park_name
-                self.entry_car_park_id = car_park_2.car_park_id
-            if selected_number.get() == car_park_3.car_park_id:
-                self.entry_car_park_name = car_park_3.car_park_name
-                self.entry_car_park_id = car_park_3.car_park_id
-            """
+            self.entry_car_park_id = selected_number.get()
 
-            l_entry_time_value.config(text=datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S'))
-            l_entry_car_park_name.config(text=self.entry_car_park_name)
-            messagebox.showinfo("Message", f"Welcome to [{self.entry_car_park_name}].")
+            for line in self.tv_car_parks.get_children():
+                if self.tv_car_parks.item(line)['values'][0] == int(selected_number.get()):
+                    # get car_park_name from tree item.
+                    self.entry_car_park_name = self.tv_car_parks.item(line)['values'][1]
+                    # set entry_time and car_park_name on screen
+                    l_entry_time_value.config(text=datetime.datetime.now().strftime('%d-%m-%Y %H:%M:%S'))
+                    l_entry_car_park_name.config(text=self.entry_car_park_name)
+                    messagebox.showinfo("Message", f"Welcome to [{self.entry_car_park_name}].")
 
         b_entry = tk.Button(displayer, text="Entry", command=entry_car_park, font=('Arial', 16))
         b_entry.grid(row=3, column=2, sticky="W", pady=(20, 5), padx=(50, 5))
@@ -96,22 +84,22 @@ class Car:
             l_entry_time_value.config(text=self.DISPLAY_INIT)
             l_entry_car_park_name.config(text=self.DISPLAY_INIT)
             messagebox.showinfo("Message", f"Thank you for using [{self.entry_car_park_name}].")
-
+            self.entry_car_park_id = self.DISPLAY_INIT
+            self.entry_car_park_name = self.DISPLAY_INIT
         b_exit = tk.Button(displayer, text="Exit", command=exit_car_park, font=('Arial', 16))
         b_exit.grid(row=3, column=3, sticky="W", pady=(20, 5), padx=(50, 5))
 
-        l_title = tk.Label(displayer, text='Nearby CarParks',
-                           font=('Arial', 20))
-        l_title.grid(row=4, column=0, columnspan=4, sticky="nsew", pady=(20, 5), padx=5)
+        l_title = tk.Label(displayer, text='Nearby CarParks', font=('Arial', 20))
+        l_title.grid(row=4, column=0, columnspan=4, sticky="nsew", pady=(50, 5), padx=5)
 
         style = ttk.Style()
-        style.configure("Treeview.Heading", font=('Calibri', 14,'bold'))
+        style.configure("Treeview.Heading", font=('Calibri', 14, 'bold'))
         style.configure("Treeview", font=('Calibri', 12))
 
         # Create Treeview widget
         self.tv_car_parks = ttk.Treeview(displayer)
         self.tv_car_parks["columns"] = ("car park id", "car park name", "address", "temperature", "parking bays",
-                           "occupied")
+                                        "occupied")
         self.tv_car_parks.column("car park id", width=50, anchor=tk.CENTER)
         self.tv_car_parks.column("car park name", width=50, anchor=tk.CENTER)
         self.tv_car_parks.column("address", width=50, anchor=tk.CENTER)
@@ -138,32 +126,40 @@ class Car:
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
-        # Subscribe to a topic upon successful connection
+        # Subscribe to topics upon successful connection
+        client.subscribe("UpdateTemperature")
         client.subscribe("CarParkInfo")
 
     def on_message(self, client, userdata, msg):
         message = msg.payload.decode()
-        print("Received message: " + message)
-
-        # get effective info
+        topic = msg.topic
+        print("topic:" + topic + ",Received message: " + message)
+        # get car_park_id from message
         car_park_id = str(message).split(",")[0]
-        car_park_name = str(message).split(",")[1]
-        car_park_address = str(message).split(",")[2]
-        temperature = str(message).split(",")[3]
-        parking_bays = str(message).split(",")[4]
-        occupied = str(message).split(",")[5]
-        available = int(parking_bays) - int(occupied)
 
-        exist = False
-        for each_car_park in self.car_park_list:
-            if car_park_id == each_car_park.car_park_id:
-                exist = True
-        if not exist:
-            car_park_info = CarParkInfo(car_park_id, car_park_name, car_park_address,
-                                        temperature, parking_bays, occupied)
-            self.car_park_list.append(car_park_info)
+        if topic == 'CarParkInfo':
+            for line in self.tv_car_parks.get_children():
+                if self.tv_car_parks.item(line)['values'][0] == int(car_park_id):
+                    self.tv_car_parks.item(line, values=(self.tv_car_parks.item(line)['values'][0],
+                                                         self.tv_car_parks.item(line)['values'][1],
+                                                         self.tv_car_parks.item(line)['values'][2],
+                                                         str(message).split(",")[3] + "℃",
+                                                         self.tv_car_parks.item(line)['values'][4],
+                                                         str(message).split(",")[5]))
+                    return
+            # if not existed in treeview tv_car_parks, insert
+            self.tv_car_parks.insert("", "end",
+                                     values=(str(message).split(",")[0], str(message).split(",")[1],
+                                             str(message).split(",")[2], str(message).split(",")[3] + "℃",
+                                             str(message).split(",")[4], str(message).split(",")[5]))
+            self.cap_park_cb['values'] = self.get_car_park_ids()
+            return
 
-        # todo: set info to the corresponding position for the final item of self.car_park_list
+    def get_car_park_ids(self):
+        car_park_id_list = list()
+        for line in self.tv_car_parks.get_children():
+            car_park_id_list.append(self.tv_car_parks.item(line)['values'][0])
+        return car_park_id_list
 
 
 def main():
