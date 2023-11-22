@@ -81,6 +81,9 @@ class Car:
 
         # 'exit' button
         def exit_car_park():
+            if self.entry_car_park_id == self.DISPLAY_INIT:
+                messagebox.showinfo("Error","You haven't got into any car park.")
+                return
             self.publisher.publish_msg(f"{self.entry_car_park_id},out")
             l_entry_time_value.config(text=self.DISPLAY_INIT)
             l_entry_car_park_name.config(text=self.DISPLAY_INIT)
