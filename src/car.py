@@ -64,6 +64,7 @@ class Car:
         # 'entry' button
         def entry_car_park():
             self.publisher.publish_msg(f"{selected_number.get()},in")
+            print(f"publish: topic = CarAct, message = {selected_number.get()},in")
             self.entry_car_park_id = selected_number.get()
 
             for line in self.tv_car_parks.get_children():
