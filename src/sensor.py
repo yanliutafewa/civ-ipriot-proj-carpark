@@ -6,7 +6,8 @@ from publisher import Publisher
 import paho.mqtt.client as mqtt
 from car import Car
 
-class Censor:
+
+class Sensor:
 
     DISPLAY_INIT = '– – –'
 
@@ -169,7 +170,7 @@ class Censor:
 def main():
     displayer = tk.Tk()
     car = Car('JYQ-4567', car_model='COUPE')
-    Censor(displayer, car)
+    Sensor(displayer, car)
     displayer.mainloop()
 
 
