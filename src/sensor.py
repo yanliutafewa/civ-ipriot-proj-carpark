@@ -14,13 +14,13 @@ class Sensor:
     def __init__(self, displayer, car):
 
         displayer.geometry('1200x550')
-        displayer.title(f"Sensor caught a car: {car.car_plate}")
+        displayer.title(f"Sensor Simulator")
 
         # Configure 3 columns with different weights and minimum sizes
         for i in range(4):
             displayer.grid_columnconfigure(i, weight=1, minsize=300)
 
-        l_title = tk.Label(displayer, text='CAR🚘', font=('Arial', 28))
+        l_title = tk.Label(displayer, text='Sensor Simulator -> CAR🚘', font=('Arial', 28))
         l_title.grid(row=0, column=0, columnspan=4, sticky="nsew", pady=(20, 5), padx=(20, 5))
 
         l_plate = tk.Label(displayer, text="license_plate :", font=('Arial', 16))
