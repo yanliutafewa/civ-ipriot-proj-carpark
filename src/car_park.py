@@ -4,6 +4,7 @@ from tkinter import messagebox
 import paho.mqtt.client as mqtt
 import time
 import threading
+from log import CSVWriter
 
 
 class CarParkInfo:
@@ -18,6 +19,9 @@ class CarParkInfo:
 
 
 class CarPark:
+
+    LOG_PATH = '../output/log.csv'
+
     def __init__(self, displayer, car_park_info):
 
         self.car_park_info = car_park_info
@@ -113,7 +117,8 @@ class CarPark:
             print(f"Message published: {message}")
             time.sleep(2)  # Sleep for 10 seconds
 
-    def on_connect(self, client, userdata, flags, rc):
+    @staticmethod
+    def on_connect(client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
         # Subscribe to a topic upon successful connection
         client.subscribe("CarAct")
@@ -129,11 +134,23 @@ class CarPark:
         # update occupied number for corresponding car park
         if car_park_id == self.car_park_info.car_park_id:
             if act == 'in':
-                self.car_park_info.occupied += 1
+                self.log_car_parking(self.get_log_message(message))
+                if self.car_park_info.occupied < self.car_park_info.parking_bays:
+                    self.car_park_info.occupied += 1
             if act == 'out':
-                self.car_park_info.occupied -= 1
+                self.log_car_parking(self.get_log_message(message))
+                if self.car_park_info.occupied > 0:
+                    self.car_park_info.occupied -= 1
             self.l_occupied.config(text=self.car_park_info.occupied)
 
+    def log_car_parking(self, message):
+        # Create an instance of CSVWriter
+        csv_writer = CSVWriter(self.LOG_PATH)
+        # Append new data to the CSV file
+        csv_writer.append_to_csv(message)
+
+    def get_log_message(self, message):
+        return str(message).split(",")[1:]
 
 def main():
     car_park_1 = CarParkInfo("1", "Wilson Parking",

@@ -1,18 +1,23 @@
 import tkinter as tk
 from tkinter import ttk
 import paho.mqtt.client as mqtt
+from parse_config import ConfigParser
 
 
 class CarParksCenter:
 
-    # car_park_list = list()
+    CONFIG_FILE_PATH = 'config.json'
 
     def __init__(self, displayer):
 
         displayer.geometry('1200x400')
-        displayer.title("Moondalup CarPark Management Center")
+        center_name = ConfigParser(self.CONFIG_FILE_PATH).get_car_parks_center_name()
+        if center_name is None:
+            print("Error:Check 'Config.jason' file. ")
+            return
+        displayer.title(center_name)
 
-        l_title = tk.Label(displayer, text='Moondalup CarPark Management Center Monitor',
+        l_title = tk.Label(displayer, text=center_name,
                            font=('Arial', 28))
         l_title.pack()
 
@@ -48,7 +53,9 @@ class CarParksCenter:
         # Start MQTT loop in a non-blocking way
         self.client.loop_start()
 
-    def on_connect(self, client, userdata, flags, rc):
+
+    @staticmethod
+    def on_connect(client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
         # Subscribe to topics
         client.subscribe("CarAct")
